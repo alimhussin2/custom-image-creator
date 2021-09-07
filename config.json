@@ -1,0 +1,36 @@
+{
+    "base_image": "https://releases.ubuntu.com/20.04/ubuntu-20.04.3-desktop-amd64.iso",
+    "image_type": "img iso",
+    "cache": "~/ubuntu-image/cache",
+    "variant": {
+        "default": {
+	    "kernel": {
+	        "version": "5.10",
+		"overlays": [
+		]
+	    },
+            "source_list": [],
+            "packages": [
+	        "vim",
+		"openssh-server",
+		"net-tools"
+	    ],
+            "image_type": "iso"
+        },
+	"ubuntu-21.04-custom": {
+	    "base_image": "https://releases.ubuntu.com/21.04/ubuntu-21.04-desktop-amd64.iso",
+            "kernel": {
+                "version": "5.10",
+                "overlays": [
+		]
+            },
+            "source_list": [],
+            "packages": [
+                "vim",
+                "openssh-server",
+                "net-tools"
+            ],
+            "image_type": "iso"
+	}
+    }
+}
