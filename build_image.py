@@ -167,14 +167,14 @@ def run():
 
     # unmount source-disk
     unmount(iso_mount_point)
+    target_directory = project_directory
 
     sources_list = get_sources_list(config, variant)
     if sources_list:
-        add_sources_list(sources_list)
+        add_sources_list(target_directory, sources_list)
 
     # prepare script for installing kernel and userspace packages in chroot/container
     packages_list = get_packages_list(config, variant)
-    target_directory = project_directory
     urls = get_kernel_overlays(config, variant)
 
     # generate installing packages, kernel scripts

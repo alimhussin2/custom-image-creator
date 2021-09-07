@@ -26,17 +26,28 @@ def do_script(target_directory, packages_list, kernel_urls, kernel_version, prox
     create_entrypoint_script(target_directory)
 
 
-def add_sources_list(sources_list):
+def add_sources_list(target_directory, sources_list):
     #cmd = "deb {link} {version} main multiverse"
 
-    logger.info("Update sources.list")
-    sources_directory = APT_SOURCES_FILE
-    # open and append the to source list
-    with open(sources_directory, "w+") as s:
+    logger.info("Create Script to update sources.list")
+    target_directory = os.path.join(target_directory, ENTRYPOINT_DIRECTORY)
+    logger.info("Target directory is %s", target_directory)
+    make_directory(target_directory)
+    srcslists_script = os.path.join(target_directory, SCRIPT_SOURCESLIST)
+
+    with open(srcslists_script, "w") as p:
+        p.write("#!/bin/bash\n")
+        p.write("\ncat << EOF >> /etc/apt/sources.list\n")
+        # open and append the to source list
         for source in sources_list:
-            cmd = "%s\n" % source
-            s.write(cmd)
+            p.write("%s\n" % source)
             logger.info("Add %s to sources.list", source)
+        p.write("EOF\n")
+        p.write("\napt-get update")
+        p.write("\n")
+
+    # change the permission of the script to 0755
+    os.chmod(srcslists_script, 0o755)
 
 
 def create_install_packages_script(packages_list, target_directory, proxy_path=None):
@@ -130,16 +141,24 @@ def create_entrypoint_script(target_directory):
     entrypoint_script = os.path.join(target_directory, SCRIPT_ENTRYPOINT)
     logger.info("Entrypoint script in %s", entrypoint_script)
 
+    srcslist_script = os.path.join(target_directory, SCRIPT_SOURCESLIST)
     kernel_script = os.path.join(target_directory, SCRIPT_KERNEL)
     packages_script = os.path.join(target_directory, SCRIPT_PACKAGES)
 
     # Relative directory in container or chroot
     rel_entry_path = os.path.join(ROOT_USER_DIRECTORY, ENTRYPOINT_DIRECTORY)
+    rel_srcslist_script = os.path.join(rel_entry_path, SCRIPT_SOURCESLIST)
     rel_kernel_script = os.path.join(rel_entry_path, SCRIPT_KERNEL)
     rel_packages_script = os.path.join(rel_entry_path, SCRIPT_PACKAGES)
 
     with open(entrypoint_script, "w") as e:
         e.write("#!/bin/bash\n")
+
+        # Add sourceslist script
+        if os.path.exists(srcslist_script):
+            e.write("\nbash %s" % rel_srcslist_script)
+            logger.debug("Add updatesrcslist.sh script")
+
         # Add install kernel script
         if os.path.exists(kernel_script):
             e.write("\nbash %s" % rel_kernel_script)
