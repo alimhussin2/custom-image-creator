@@ -4,6 +4,7 @@
 SCRIPT_PACKAGES = "install_packages.sh"
 SCRIPT_KERNEL = "install_kernel.sh"
 SCRIPT_ENTRYPOINT = "entrypoint.sh"
+SCRIPT_SOURCESLIST = "updatesrcslist.sh"
 
 # Directory
 ENTRYPOINT_DIRECTORY = "entrypoint.d"
